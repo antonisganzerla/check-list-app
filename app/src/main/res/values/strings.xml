@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">Check List</string>
+
+    <!-- Menu item drawer -->
+    <string name="menu_item_check_list">Check List</string>
+    <string name="menu_item_title">Ajuda</string>
+    <string name="menu_item_tools">Configurações</string>
+    <string name="menu_item_about">Sobre o app</string>
+    <string name="menu_item_logout">Sair</string>
+
+    <!-- Login ACTIVITY-->
+    <string name="msg_signin_success">signInResult:success -> %1$s.</string>
+    <string name="msg_signin_fail">signInResult:failed code= %1$s.</string>
+
+    <!-- MainActivity -->
+    <string name="open_drawer">Abrir</string>
+    <string name="close_drawer">Fechar</string>
+    <string name="msg_logout_success">Logout with success</string>
+
+    <!-- AlertDialogUtil -->
+    <string name="dialog_title">Atenção</string>
+    <string name="dialog_message_logout">Deseja realmente efetuar o logout?</string>
+    <string name="dialog_positive_button">Sim</string>
+    <string name="dialog_negative_button">Cancelar</string>
+    <string name="dialog_about_app_title">Sobre o app</string>
+    <string name="dialog_about_app_message">Aplicativo para criar checklists.\n\n Desenvolvido por Antoni Sganzerla.</string>
+
+</resources>
