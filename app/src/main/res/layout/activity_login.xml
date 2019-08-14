@@ -23,7 +23,7 @@
     <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/common_google_signin_btn_icon_light_normal"
+            android:src="@drawable/ic_launcher_foreground"
             app:layout_constraintBottom_toTopOf="@+id/sign_in_button"
             android:layout_marginTop="8dp"
             app:layout_constraintTop_toTopOf="parent"

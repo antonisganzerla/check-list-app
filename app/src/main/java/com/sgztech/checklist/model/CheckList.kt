@@ -1,4 +1,8 @@
 package com.sgztech.checklist.model
 
-class CheckList {
-}
+import java.util.*
+
+data class CheckList(
+    val name: String,
+    val createDate: Date = Date()
+)

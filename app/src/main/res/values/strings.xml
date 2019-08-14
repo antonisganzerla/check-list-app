@@ -2,13 +2,13 @@
     <string name="app_name">Check List</string>
 
     <!-- Menu item drawer -->
-    <string name="menu_item_check_list">Check List</string>
+    <string name="menu_item_check_list">Check list</string>
     <string name="menu_item_title">Ajuda</string>
     <string name="menu_item_tools">Configurações</string>
     <string name="menu_item_about">Sobre o app</string>
     <string name="menu_item_logout">Sair</string>
 
-    <!-- Login ACTIVITY-->
+    <!-- LoginActivity -->
     <string name="msg_signin_success">signInResult:success -> %1$s.</string>
     <string name="msg_signin_fail">signInResult:failed code= %1$s.</string>
 
@@ -23,6 +23,27 @@
     <string name="dialog_positive_button">Sim</string>
     <string name="dialog_negative_button">Cancelar</string>
     <string name="dialog_about_app_title">Sobre o app</string>
-    <string name="dialog_about_app_message">Aplicativo para criar checklists.\n\n Desenvolvido por Antoni Sganzerla.</string>
+    <string name="dialog_about_app_message">Aplicativo para criar check lists.\n\n Desenvolvido por Antoni Sganzerla.</string>
+    <string name="dialog_message_delete_check_list">Deseja excluir o check list?</string>
+
+    <!-- CheckListFragment -->
+    <string name="title_check_list_fragment">Check lists</string>
+    <string name="check_list_empty">Você não possui check lists criados</string>
+    <string name="dialog_add_check_list_title">Criar check list</string>
+    <string name="dialog_add_check_list_button">Salvar</string>
+    <string name="message_check_list_added">Check list criado com sucesso.</string>
+
+    <!-- Dialog add check list -->
+    <string name="tvCheckListName">Nome do check list</string>
+
+    <!-- CheckListAdapter -->
+    <string name="message_delete_item_check_list">Deletado com sucesso</string>
+
+    <!-- PreferencesFragment -->
+    <string name="title_preferences_fragment">Configurações</string>
+    <string name="title_notification">Notificações</string>
+    <string name="summary_notification">Receber notificações</string>
+    <string name="key_notification">notifications</string>
+    <bool name="notification_setting_default">true</bool>
 
 </resources>

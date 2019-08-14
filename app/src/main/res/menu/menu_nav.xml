@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group>
         <item android:id="@+id/nav_item_check_list"
-              android:icon="@android:drawable/ic_menu_slideshow"
+              android:icon="@android:drawable/ic_menu_agenda"
               android:title="@string/menu_item_check_list"/>
         <item android:id="@+id/nav_item_tools"
               android:icon="@android:drawable/ic_menu_preferences"

@@ -2,6 +2,7 @@ package com.sgztech.checklist.view
 
 
 import android.os.Bundle
+import android.os.PersistableBundle
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
@@ -21,13 +22,24 @@ class MainActivity : AppCompatActivity() {
     private val account: GoogleSignInAccount? by lazy {
         GoogleSignIn.getLastSignedInAccount(this)
     }
+    private var fragmentPosition = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        savedInstanceState?.let {
+            fragmentPosition = it.getInt(CURRENT_FRAGMENT_KEY)
+        }
+
         setupToolbar()
         setupDrawer()
+        openCheckListFragment()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?) {
+        outState?.putInt(CURRENT_FRAGMENT_KEY, fragmentPosition)
+        super.onSaveInstanceState(outState, outPersistentState)
     }
 
     private fun setupToolbar() {
@@ -47,10 +59,10 @@ class MainActivity : AppCompatActivity() {
         navView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.nav_item_check_list -> {
-                    // TODO
+                    openCheckListFragment()
                 }
                 R.id.nav_item_tools -> {
-                    // TODO
+                    displayView(1, getString(R.string.title_preferences_fragment))
                 }
                 R.id.nav_item_logout -> {
                     showDialogLogout()
@@ -90,5 +102,30 @@ class MainActivity : AppCompatActivity() {
             it.nav_header_email.text = account?.email
             Picasso.get().load(account?.photoUrl).into(it.nav_header_imageView)
         }
+    }
+
+    private fun openCheckListFragment() {
+        displayView(INIT_POSITION_FRAGMENT, getString(R.string.title_check_list_fragment))
+    }
+
+    private fun displayView(position: Int, title: String) {
+        if (position != fragmentPosition) {
+            val fragment = when (position) {
+                0 -> CheckListFragment()
+                1 -> PreferencesFragment()
+                else -> {
+                    CheckListFragment()
+                }
+            }
+            supportFragmentManager.beginTransaction().replace(R.id.content_frame, fragment, null)
+                .commitAllowingStateLoss()
+            fragmentPosition = position
+        }
+        toolbar.title = title
+    }
+
+    companion object {
+        const val INIT_POSITION_FRAGMENT = 0
+        const val CURRENT_FRAGMENT_KEY = "CURRENT_FRAGMENT_KEY"
     }
 }
