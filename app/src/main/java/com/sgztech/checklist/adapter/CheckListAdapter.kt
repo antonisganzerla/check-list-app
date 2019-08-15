@@ -5,11 +5,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
-import com.sgztech.checklist.extension.toPtBrDateString
 import com.sgztech.checklist.R
+import com.sgztech.checklist.extension.toPtBrDateString
 import com.sgztech.checklist.model.CheckList
 import com.sgztech.checklist.util.AlertDialogUtil
 import com.sgztech.checklist.util.SnackBarUtil
+import com.sgztech.checklist.view.CheckItemActivity
 import kotlinx.android.synthetic.main.check_list_card_view.view.*
 
 class CheckListAdapter (
@@ -31,10 +32,14 @@ class CheckListAdapter (
 
     inner class CheckListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(checkList: CheckList, position: Int){
-            itemView.tvCheckListName.text = checkList.name
+            val name = checkList.name
+            itemView.tvCheckListName.text = name
             itemView.tvDate.text = checkList.createDate.toPtBrDateString()
             itemView.btnDeleteCheckList.setOnClickListener {
                 createAlertDialog(checkList, position).show()
+            }
+            itemView.setOnClickListener {
+                CheckItemActivity.open(itemView.context, name)
             }
         }
 

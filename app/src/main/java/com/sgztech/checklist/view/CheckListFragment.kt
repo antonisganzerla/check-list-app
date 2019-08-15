@@ -15,7 +15,8 @@ import com.sgztech.checklist.extension.visible
 import com.sgztech.checklist.model.CheckList
 import com.sgztech.checklist.util.AlertDialogUtil
 import com.sgztech.checklist.util.SnackBarUtil
-import kotlinx.android.synthetic.main.dialog_add_check_list.view.*
+import kotlinx.android.synthetic.main.dialog_default_add.view.*
+import kotlinx.android.synthetic.main.fab.*
 import kotlinx.android.synthetic.main.fragment_check_list.*
 
 
@@ -28,8 +29,8 @@ class CheckListFragment : Fragment() {
             R.string.dialog_add_check_list_title,
             dialogView
         )
-            .setPositiveButton(R.string.dialog_add_check_list_button) { _, _ ->
-                val name = dialogView.etCheckListName.text.toString()
+            .setPositiveButton(R.string.dialog_save) { _, _ ->
+                val name = dialogView.etName.text.toString()
                 saveCheckList(name)
                 showMessage(R.string.message_check_list_added)
             }
@@ -37,7 +38,7 @@ class CheckListFragment : Fragment() {
     }
 
     private val dialogView: View by lazy {
-        layoutInflater.inflate(R.layout.dialog_add_check_list, null)
+        layoutInflater.inflate(R.layout.dialog_default_add, null)
     }
 
     private val list: MutableList<CheckList> by lazy {
@@ -54,9 +55,8 @@ class CheckListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        fab_check_list.setOnClickListener {
-            dialog.show()
-        }
+        setupDialogView()
+        setupFab()
         setupRecyclerView()
     }
 
@@ -67,6 +67,16 @@ class CheckListFragment : Fragment() {
             it.setHasFixedSize(true)
         }
         setupListVisibility(list)
+    }
+
+    private fun setupFab() {
+        fab.setOnClickListener {
+            dialog.show()
+        }
+    }
+
+    private fun setupDialogView() {
+        dialogView.tvName.text = getString(R.string.tvNameChecklist)
     }
 
     private fun setupListVisibility(list: MutableList<CheckList>) {

@@ -23,18 +23,24 @@
     <string name="dialog_positive_button">Sim</string>
     <string name="dialog_negative_button">Cancelar</string>
     <string name="dialog_about_app_title">Sobre o app</string>
-    <string name="dialog_about_app_message">Aplicativo para criar check lists.\n\n Desenvolvido por Antoni Sganzerla.</string>
+    <string name="dialog_about_app_message">Aplicativo para criar check lists.\n\n Desenvolvido por Antoni Sganzerla.
+    </string>
     <string name="dialog_message_delete_check_list">Deseja excluir o check list?</string>
 
     <!-- CheckListFragment -->
     <string name="title_check_list_fragment">Check lists</string>
     <string name="check_list_empty">Você não possui check lists criados</string>
     <string name="dialog_add_check_list_title">Criar check list</string>
-    <string name="dialog_add_check_list_button">Salvar</string>
     <string name="message_check_list_added">Check list criado com sucesso.</string>
 
-    <!-- Dialog add check list -->
-    <string name="tvCheckListName">Nome do check list</string>
+    <!-- CheckItemActivity -->
+    <string name="message_check_item_added">Item de check list criado com sucesso.</string>
+    <string name="dialog_add_check_item_title">Criar item de check list</string>
+
+    <!-- dialog_default_add -->
+    <string name="tvNameChecklist">Nome do check list</string>
+    <string name="tvNameCheckItem">Nome do item do check list</string>
+    <string name="dialog_save">Salvar</string>
 
     <!-- CheckListAdapter -->
     <string name="message_delete_item_check_list">Deletado com sucesso</string>
