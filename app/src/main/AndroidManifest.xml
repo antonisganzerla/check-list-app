@@ -12,9 +12,10 @@
             android:roundIcon="@mipmap/ic_launcher_app_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme"
+            android:name="com.sgztech.checklist.core.CoreApplication"
             tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".view.CheckItemActivity">
-        </activity>
+
+        <activity android:name=".view.CheckItemActivity"/>
         <activity android:name=".view.MainActivity"/>
         <activity android:name=".view.LoginActivity">
             <intent-filter>

@@ -6,12 +6,14 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import com.sgztech.checklist.R
-import com.sgztech.checklist.extension.toPtBrDateString
+import com.sgztech.checklist.core.CoreApplication
 import com.sgztech.checklist.model.CheckList
 import com.sgztech.checklist.util.AlertDialogUtil
 import com.sgztech.checklist.util.SnackBarUtil
 import com.sgztech.checklist.view.CheckItemActivity
 import kotlinx.android.synthetic.main.check_list_card_view.view.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class CheckListAdapter (
     private val list: MutableList<CheckList>
@@ -33,13 +35,14 @@ class CheckListAdapter (
     inner class CheckListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(checkList: CheckList, position: Int){
             val name = checkList.name
+            val id = checkList.id
             itemView.tvCheckListName.text = name
-            itemView.tvDate.text = checkList.createDate.toPtBrDateString()
+            itemView.tvDate.text = checkList.createDate
             itemView.btnDeleteCheckList.setOnClickListener {
                 createAlertDialog(checkList, position).show()
             }
             itemView.setOnClickListener {
-                CheckItemActivity.open(itemView.context, name)
+                CheckItemActivity.open(itemView.context, name, id)
             }
         }
 
@@ -48,6 +51,10 @@ class CheckListAdapter (
                 itemView.context,
                 R.string.dialog_message_delete_check_list
             ) {
+                GlobalScope.launch {
+                    val dao = CoreApplication.database?.checkListDao()
+                    dao?.delete(checkList)
+                }
                 list.remove(checkList)
                 notifyItemRemoved(position)
                 SnackBarUtil.show(itemView, R.string.message_delete_item_check_list)

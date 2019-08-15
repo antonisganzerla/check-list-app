@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.sgztech.checklist.R
 import com.sgztech.checklist.adapter.CheckListAdapter
+import com.sgztech.checklist.core.CoreApplication
 import com.sgztech.checklist.extension.gone
 import com.sgztech.checklist.extension.visible
 import com.sgztech.checklist.model.CheckList
@@ -18,10 +19,13 @@ import com.sgztech.checklist.util.SnackBarUtil
 import kotlinx.android.synthetic.main.dialog_default_add.view.*
 import kotlinx.android.synthetic.main.fab.*
 import kotlinx.android.synthetic.main.fragment_check_list.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 
 
 class CheckListFragment : Fragment() {
-
 
     private val dialog: AlertDialog by lazy {
         AlertDialogUtil.buildCustomDialog(
@@ -30,9 +34,10 @@ class CheckListFragment : Fragment() {
             dialogView
         )
             .setPositiveButton(R.string.dialog_save) { _, _ ->
-                val name = dialogView.etName.text.toString()
-                saveCheckList(name)
-                showMessage(R.string.message_check_list_added)
+                with(dialogView.etName.text)      {
+                    saveCheckList(this.toString())
+                    this.clear()
+                }
             }
             .create()
     }
@@ -41,9 +46,7 @@ class CheckListFragment : Fragment() {
         layoutInflater.inflate(R.layout.dialog_default_add, null)
     }
 
-    private val list: MutableList<CheckList> by lazy {
-        loadBlockList()
-    }
+    private var list = mutableListOf<CheckList>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,7 +60,14 @@ class CheckListFragment : Fragment() {
 
         setupDialogView()
         setupFab()
-        setupRecyclerView()
+        loadData()
+    }
+
+    private fun loadData() {
+        GlobalScope.launch(context = Dispatchers.Main) {
+            loadCheckList()
+            setupRecyclerView()
+        }
     }
 
     private fun setupRecyclerView() {
@@ -89,8 +99,12 @@ class CheckListFragment : Fragment() {
         }
     }
 
-    private fun loadBlockList(): MutableList<CheckList> {
-        return mutableListOf(CheckList("Teste"))
+    private suspend fun loadCheckList(){
+        val result = GlobalScope.async {
+            val dao = CoreApplication.database?.checkListDao()
+            dao?.all()
+        }
+        list = result.await()?.toMutableList() ?: mutableListOf()
     }
 
 
@@ -101,12 +115,14 @@ class CheckListFragment : Fragment() {
     }
 
     private fun saveCheckList(name: String) {
-        list.add(
-            CheckList(
-                name
-            )
-        )
+        val checkList = CheckList(name = name)
+        GlobalScope.launch {
+            val dao = CoreApplication.database?.checkListDao()
+            dao?.add(checkList)
+        }
+        list.add(checkList)
         recycler_view_check_list.adapter?.notifyDataSetChanged()
+        showMessage(R.string.message_check_list_added)
     }
 
 }
