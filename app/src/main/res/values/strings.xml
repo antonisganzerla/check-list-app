@@ -26,6 +26,7 @@
     <string name="dialog_about_app_message">Aplicativo para criar check lists.\n\n Desenvolvido por Antoni Sganzerla.
     </string>
     <string name="dialog_message_delete_check_list">Deseja excluir o check list?</string>
+    <string name="dialog_message_delete_check_item">Deseja excluir item do check list?</string>
 
     <!-- CheckListFragment -->
     <string name="title_check_list_fragment">Check lists</string>
@@ -43,7 +44,7 @@
     <string name="dialog_save">Salvar</string>
 
     <!-- CheckListAdapter -->
-    <string name="message_delete_item_check_list">Deletado com sucesso</string>
+    <string name="message_delete_item">Deletado com sucesso</string>
 
     <!-- PreferencesFragment -->
     <string name="title_preferences_fragment">Configurações</string>

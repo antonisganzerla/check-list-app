@@ -10,20 +10,13 @@
 
     <include layout="@layout/toolbar" android:id="@+id/include_toolbar"/>
 
-    <ScrollView
+    <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view_check_item"
+            android:scrollbars="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="?attr/actionBarSize">
-
-        <LinearLayout
-                android:id="@+id/llItem"
-                android:orientation="vertical"
-                android:layout_gravity="top"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-        </LinearLayout>
-    </ScrollView>
+            android:layout_marginTop="?attr/actionBarSize"
+            tools:listitem="@layout/check_item_card_view"/>
 
     <include layout="@layout/fab" android:id="@+id/include_fab"/>
 

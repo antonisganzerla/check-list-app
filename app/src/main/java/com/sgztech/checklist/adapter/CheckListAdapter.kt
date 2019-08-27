@@ -57,7 +57,7 @@ class CheckListAdapter (
                 }
                 list.remove(checkList)
                 notifyItemRemoved(position)
-                SnackBarUtil.show(itemView, R.string.message_delete_item_check_list)
+                SnackBarUtil.show(itemView, R.string.message_delete_item)
             }
         }
     }

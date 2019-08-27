@@ -3,7 +3,7 @@
               xmlns:app="http://schemas.android.com/apk/res-auto"
               android:orientation="vertical"
               android:layout_width="match_parent"
-              android:layout_height="match_parent">
+              android:layout_height="wrap_content">
 
     <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
@@ -18,8 +18,7 @@
                 android:id="@+id/tvId"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:visibility="gone"
-        />
+                android:visibility="gone" />
 
 
         <CheckBox
@@ -29,6 +28,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="15dp"/>
+
+
+            <ImageButton
+                    android:id="@+id/btnDeleteCheckItem"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:layout_gravity="center_vertical|end"
+                    android:background="@android:drawable/ic_delete"
+                    android:layout_marginEnd="40dp"/>
 
     </androidx.cardview.widget.CardView>
 
