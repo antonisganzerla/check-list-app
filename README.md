@@ -6,4 +6,7 @@
 * Coroutines
 * Picasso
 * Material Design Components
+* ViewModel
+* LiveData
+* Koin
 
