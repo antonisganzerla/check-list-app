@@ -6,21 +6,22 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.sgztech.checklist.R
 import com.sgztech.checklist.adapter.CheckItemAdapter
-import com.sgztech.checklist.core.CoreApplication
+import com.sgztech.checklist.extension.gone
+import com.sgztech.checklist.extension.showMessage
+import com.sgztech.checklist.extension.visible
 import com.sgztech.checklist.model.CheckItem
 import com.sgztech.checklist.util.AlertDialogUtil
-import com.sgztech.checklist.util.SnackBarUtil
+import com.sgztech.checklist.util.CheckNameUtil.isValid
+import com.sgztech.checklist.viewModel.CheckItemViewModel
 import kotlinx.android.synthetic.main.activity_check_item.*
 import kotlinx.android.synthetic.main.dialog_default_add.view.*
 import kotlinx.android.synthetic.main.fab.*
 import kotlinx.android.synthetic.main.toolbar.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 
 
 class CheckItemActivity : AppCompatActivity() {
@@ -29,33 +30,17 @@ class CheckItemActivity : AppCompatActivity() {
         layoutInflater.inflate(R.layout.dialog_default_add, null)
     }
 
-    private var idCheckList: Long = 0
-
     private val dialog: AlertDialog by lazy {
         AlertDialogUtil.buildCustomDialog(
             this,
             R.string.dialog_add_check_item_title,
             dialogView
-        )
-            .setPositiveButton(R.string.dialog_save) { _, _ ->
-                with(dialogView.etName.text) {
-                    saveCheckItem(this.toString(), idCheckList)
-                    this.clear()
-                }
-            }
-            .create()
+        ).create()
     }
 
-    private fun saveCheckItem(name: String, id: Long) {
-        val checkItem = CheckItem(name = name, idCheckList = id)
-        val adapter: CheckItemAdapter = recycler_view_check_item.adapter as CheckItemAdapter
-        adapter.save(checkItem)
-        adapter.notifyDataSetChanged()
-        list.add(checkItem)
-        showMessage(R.string.message_check_item_added)
-    }
-
-    private var list = mutableListOf<CheckItem>()
+    private var idCheckList: Long = 0
+    private val adapter: CheckItemAdapter by inject()
+    private val viewModel: CheckItemViewModel by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,6 +50,7 @@ class CheckItemActivity : AppCompatActivity() {
         setupDialogView()
         setupFab()
         setupIdCheckList()
+        setupRecyclerView()
         loadData()
     }
 
@@ -89,13 +75,21 @@ class CheckItemActivity : AppCompatActivity() {
     }
 
     private fun setupDialogView() {
-        dialogView.tvName.text = getString(R.string.tvNameCheckItem)
+        dialogView.btnSave.setOnClickListener {
+            val etName = dialogView.etName
+            if (isValid(etName, dialogView.textInputLayoutName)) {
+                saveCheckItem(etName.text.toString(), idCheckList)
+                etName.text.clear()
+                dialog.dismiss()
+            }
+        }
     }
 
-    private fun showMessage(resourceString: Int) {
-        SnackBarUtil.showShort(recycler_view_check_item, resourceString)
+    private fun saveCheckItem(name: String, id: Long) {
+        val checkItem = CheckItem(name = name, idCheckList = id)
+        viewModel.insert(checkItem)
+        showMessage(recycler_view_check_item, R.string.message_check_item_added)
     }
-
 
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed()
@@ -103,26 +97,32 @@ class CheckItemActivity : AppCompatActivity() {
         return true
     }
 
-    private suspend fun loadCheckItemList() {
-        val result = GlobalScope.async {
-            val dao = CoreApplication.database?.checkItemDao()
-            dao?.loadbyCheckList(idCheckList)
-        }
-        list = result.await()?.toMutableList() ?: mutableListOf()
-    }
-
     private fun loadData() {
-        GlobalScope.launch(context = Dispatchers.Main) {
-            loadCheckItemList()
-            setupRecyclerView()
-        }
+        viewModel.getAllCheckItens(idCheckList).observe(
+            this,
+            Observer {
+                adapter.setCheckLists(it)
+                setupListVisibility(it)
+            }
+        )
     }
 
     private fun setupRecyclerView() {
         recycler_view_check_item.let {
-            it.adapter = CheckItemAdapter(list, idCheckList)
+            adapter.setIdCheckList(idCheckList)
+            it.adapter = adapter
             it.layoutManager = LinearLayoutManager(this)
             it.setHasFixedSize(true)
+        }
+    }
+
+    private fun setupListVisibility(list: List<CheckItem>) {
+        if (list.isEmpty()) {
+            recycler_view_check_item.gone()
+            panel_empty_list.visible()
+        } else {
+            recycler_view_check_item.visible()
+            panel_empty_list.gone()
         }
     }
 

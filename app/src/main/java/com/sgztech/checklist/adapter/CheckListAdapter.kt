@@ -6,18 +6,19 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import com.sgztech.checklist.R
-import com.sgztech.checklist.core.CoreApplication
 import com.sgztech.checklist.model.CheckList
+import com.sgztech.checklist.repository.CheckListRepository
 import com.sgztech.checklist.util.AlertDialogUtil
 import com.sgztech.checklist.util.SnackBarUtil
 import com.sgztech.checklist.view.CheckItemActivity
 import kotlinx.android.synthetic.main.check_list_card_view.view.*
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 class CheckListAdapter (
-    private val list: MutableList<CheckList>
-    ) : RecyclerView.Adapter<CheckListAdapter.CheckListViewHolder>() {
+    private val repository: CheckListRepository
+) : RecyclerView.Adapter<CheckListAdapter.CheckListViewHolder>() {
+
+    private var list: List<CheckList> = ArrayList()
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CheckListViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.check_list_card_view, parent, false)
         return CheckListViewHolder(view)
@@ -29,6 +30,11 @@ class CheckListAdapter (
 
     override fun onBindViewHolder(holder: CheckListViewHolder, position: Int) {
         holder.bind(list[position], position)
+    }
+
+    fun setCheckLists(checkLists: List<CheckList>) {
+        this.list = checkLists
+        notifyDataSetChanged()
     }
 
 
@@ -51,11 +57,7 @@ class CheckListAdapter (
                 itemView.context,
                 R.string.dialog_message_delete_check_list
             ) {
-                GlobalScope.launch {
-                    val dao = CoreApplication.database?.checkListDao()
-                    dao?.delete(checkList)
-                }
-                list.remove(checkList)
+                repository.delete(checkList)
                 notifyItemRemoved(position)
                 SnackBarUtil.show(itemView, R.string.message_delete_item)
             }

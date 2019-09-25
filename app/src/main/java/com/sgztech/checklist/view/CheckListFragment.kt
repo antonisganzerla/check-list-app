@@ -7,22 +7,21 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.sgztech.checklist.R
 import com.sgztech.checklist.adapter.CheckListAdapter
-import com.sgztech.checklist.core.CoreApplication
 import com.sgztech.checklist.extension.gone
+import com.sgztech.checklist.extension.showMessage
 import com.sgztech.checklist.extension.visible
 import com.sgztech.checklist.model.CheckList
 import com.sgztech.checklist.util.AlertDialogUtil
-import com.sgztech.checklist.util.SnackBarUtil
+import com.sgztech.checklist.util.CheckNameUtil
+import com.sgztech.checklist.viewModel.CheckListViewModel
 import kotlinx.android.synthetic.main.dialog_default_add.view.*
 import kotlinx.android.synthetic.main.fab.*
 import kotlinx.android.synthetic.main.fragment_check_list.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 
 
 class CheckListFragment : Fragment() {
@@ -32,21 +31,15 @@ class CheckListFragment : Fragment() {
             this.requireContext(),
             R.string.dialog_add_check_list_title,
             dialogView
-        )
-            .setPositiveButton(R.string.dialog_save) { _, _ ->
-                with(dialogView.etName.text)      {
-                    saveCheckList(this.toString())
-                    this.clear()
-                }
-            }
-            .create()
+        ).create()
     }
 
     private val dialogView: View by lazy {
         layoutInflater.inflate(R.layout.dialog_default_add, null)
     }
 
-    private var list = mutableListOf<CheckList>()
+    private val adapter: CheckListAdapter by inject()
+    private val viewModel: CheckListViewModel by inject()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -60,23 +53,25 @@ class CheckListFragment : Fragment() {
 
         setupDialogView()
         setupFab()
+        setupRecyclerView()
         loadData()
     }
 
     private fun loadData() {
-        GlobalScope.launch(context = Dispatchers.Main) {
-            loadCheckList()
-            setupRecyclerView()
-        }
+        viewModel.getAllCheckLists().observe(
+            this, Observer {
+                adapter.setCheckLists(it)
+                setupListVisibility(it)
+            }
+        )
     }
 
     private fun setupRecyclerView() {
         recycler_view_check_list.let {
-            it.adapter = CheckListAdapter(list)
+            it.adapter = adapter
             it.layoutManager = LinearLayoutManager(activity)
             it.setHasFixedSize(true)
         }
-        setupListVisibility(list)
     }
 
     private fun setupFab() {
@@ -86,43 +81,30 @@ class CheckListFragment : Fragment() {
     }
 
     private fun setupDialogView() {
-        dialogView.tvName.text = getString(R.string.tvNameChecklist)
+        dialogView.btnSave.setOnClickListener {
+            val etName = dialogView.etName
+            if (CheckNameUtil.isValid(etName, dialogView.textInputLayoutName)) {
+                saveCheckList(etName.text.toString())
+                etName.text.clear()
+                dialog.dismiss()
+            }
+        }
     }
 
-    private fun setupListVisibility(list: MutableList<CheckList>) {
+    private fun setupListVisibility(list: List<CheckList>) {
         if (list.isEmpty()) {
             recycler_view_check_list.gone()
-            tv_empty_check_list.visible()
+            panel_empty_list.visible()
         } else {
             recycler_view_check_list.visible()
-            tv_empty_check_list.gone()
-        }
-    }
-
-    private suspend fun loadCheckList(){
-        val result = GlobalScope.async {
-            val dao = CoreApplication.database?.checkListDao()
-            dao?.all()
-        }
-        list = result.await()?.toMutableList() ?: mutableListOf()
-    }
-
-
-    private fun showMessage(resourceMessage: Int) {
-        this.view?.let {
-            SnackBarUtil.show(it, resourceMessage)
+            panel_empty_list.gone()
         }
     }
 
     private fun saveCheckList(name: String) {
         val checkList = CheckList(name = name)
-        GlobalScope.launch {
-            val dao = CoreApplication.database?.checkListDao()
-            dao?.add(checkList)
-        }
-        list.add(checkList)
-        recycler_view_check_list.adapter?.notifyDataSetChanged()
-        showMessage(R.string.message_check_list_added)
+        viewModel.insert(checkList)
+        requireActivity().showMessage(fab, R.string.message_check_list_added)
     }
 
 }

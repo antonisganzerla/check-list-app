@@ -37,10 +37,11 @@
     <!-- CheckItemActivity -->
     <string name="message_check_item_added">Item de check list criado com sucesso.</string>
     <string name="dialog_add_check_item_title">Criar item de check list</string>
+    <string name="check_item_list_empty">Você não possui itens de check lists criados</string>
 
     <!-- dialog_default_add -->
-    <string name="tvNameChecklist">Nome do check list</string>
-    <string name="tvNameCheckItem">Nome do item do check list</string>
+    <string name="tvName">Nome</string>
+    <string name="msg_name_required">Informe o nome</string>
     <string name="dialog_save">Salvar</string>
 
     <!-- CheckListAdapter -->

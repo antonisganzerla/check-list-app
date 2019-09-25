@@ -16,7 +16,33 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="?attr/actionBarSize"
+            android:visibility="gone"
             tools:listitem="@layout/check_item_card_view"/>
+
+    <LinearLayout
+            android:id="@+id/panel_empty_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="visible"
+            android:orientation="vertical">
+
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="100dp"
+                android:padding="10dp"
+                android:gravity="top|center"
+                style="@style/TextAppearance.AppCompat.Medium"
+                android:text="@string/check_item_list_empty" />
+
+        <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="?actionBarSize"
+                android:src="@drawable/ic_notebook_multiple_grey600_48dp"
+                />
+    </LinearLayout>
 
     <include layout="@layout/fab" android:id="@+id/include_fab"/>
 

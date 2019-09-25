@@ -6,16 +6,25 @@
         android:layout_height="match_parent"
         android:padding="25dp">
 
-    <TextView
-            android:id="@+id/tvName"
-            android:layout_marginTop="20dp"
+    <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayoutName"
             android:layout_width="match_parent"
-            style="@style/TextAppearance.AppCompat.Medium"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content">
 
-    <EditText
-            android:id="@+id/etName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+        <EditText
+                android:id="@+id/etName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/tvName" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+            android:id="@+id/btnSave"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="10dp"
+            android:text="@string/dialog_save" />
 
 </LinearLayout>
