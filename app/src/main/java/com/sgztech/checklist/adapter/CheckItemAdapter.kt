@@ -1,6 +1,7 @@
 package com.sgztech.checklist.adapter
 
 import android.graphics.Paint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,17 +10,14 @@ import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import com.sgztech.checklist.R
 import com.sgztech.checklist.model.CheckItem
-import com.sgztech.checklist.repository.CheckItemRepository
 import com.sgztech.checklist.util.AlertDialogUtil
-import com.sgztech.checklist.util.SnackBarUtil
 import kotlinx.android.synthetic.main.check_item_card_view.view.*
 
 class CheckItemAdapter(
-    private val repository: CheckItemRepository
+    private val deleteCallback : (checkItem: CheckItem) -> Unit
 ) : RecyclerView.Adapter<CheckItemAdapter.CheckItemViewHolder>() {
 
     private var list: List<CheckItem> = ArrayList()
-    private var idCheckList: Long = 0L
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CheckItemViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -35,17 +33,18 @@ class CheckItemAdapter(
         holder.bind(list[position], position)
     }
 
-    fun setCheckLists(checkItens: List<CheckItem>) {
+    fun setCheckItens(checkItens: List<CheckItem>) {
         this.list = checkItens
         notifyDataSetChanged()
     }
 
-    fun setIdCheckList(idCheckList: Long){
-        this.idCheckList = idCheckList
+    fun getCheckItens(): List<CheckItem>{
+        return list
     }
 
     inner class CheckItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(checkItem: CheckItem, position: Int) {
+            Log.w("DEBUG", "bind no adaptger")
             with(itemView.cbCheckItem) {
                 this.text = checkItem.name
                 this.isChecked = checkItem.isDone
@@ -53,19 +52,13 @@ class CheckItemAdapter(
                     overideText()
                 }
                 this.setOnCheckedChangeListener { _, isChecked ->
+                    Log.w("DEBUG", "setOnCheckedChangeListener no adaptger")
                     if (isChecked) {
                         overideText()
                     } else {
                         normalText()
                     }
-                    save(
-                        CheckItem(
-                            itemView.tvId.text.toString().toLong(),
-                            itemView.cbCheckItem.text.toString(),
-                            isChecked,
-                            idCheckList
-                        )
-                    )
+                    checkItem.isDone = isChecked
                 }
             }
             itemView.tvId.text = checkItem.id.toString()
@@ -79,15 +72,10 @@ class CheckItemAdapter(
                 itemView.context,
                 R.string.dialog_message_delete_check_item
             ) {
-                repository.delete(checkItem)
+                deleteCallback(checkItem)
                 notifyItemRemoved(position)
-                SnackBarUtil.show(itemView, R.string.message_delete_item)
             }
         }
-    }
-
-    fun save(checkItem: CheckItem) {
-        repository.insert(checkItem)
     }
 
     private fun CheckBox.normalText() {

@@ -6,6 +6,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
+        android:background="@color/colorBackground"
         tools:context=".view.CheckItemActivity">
 
     <include layout="@layout/toolbar" android:id="@+id/include_toolbar"/>
@@ -16,14 +17,15 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="?attr/actionBarSize"
-            android:visibility="gone"
+            android:visibility="visible"
+            android:layout_marginBottom="60dp"
             tools:listitem="@layout/check_item_card_view"/>
 
     <LinearLayout
             android:id="@+id/panel_empty_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="visible"
+            android:visibility="gone"
             android:orientation="vertical">
 
         <TextView
@@ -43,6 +45,16 @@
                 android:src="@drawable/ic_notebook_multiple_grey600_48dp"
                 />
     </LinearLayout>
+
+    <com.google.android.gms.ads.AdView
+            xmlns:ads="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/adView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            ads:adSize="BANNER"
+            android:layout_gravity="bottom|center"
+            ads:adUnitId="ca-app-pub-9764822217711668/2494923365">
+    </com.google.android.gms.ads.AdView>
 
     <include layout="@layout/fab" android:id="@+id/include_fab"/>
 

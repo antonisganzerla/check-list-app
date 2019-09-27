@@ -8,5 +8,5 @@ class CheckItem(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val name: String,
-    val isDone: Boolean = false,
+    var isDone: Boolean = false,
     val idCheckList: Long)

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Check List</string>
+    <string name="app_name">Check List App</string>
 
     <!-- Menu item drawer -->
     <string name="menu_item_check_list">Check list</string>

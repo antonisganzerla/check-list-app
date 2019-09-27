@@ -2,6 +2,7 @@ package com.sgztech.checklist.view
 
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +10,10 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.InterstitialAd
+import com.google.android.gms.ads.MobileAds
 import com.sgztech.checklist.R
 import com.sgztech.checklist.adapter.CheckListAdapter
 import com.sgztech.checklist.extension.gone
@@ -38,8 +43,9 @@ class CheckListFragment : Fragment() {
         layoutInflater.inflate(R.layout.dialog_default_add, null)
     }
 
-    private val adapter: CheckListAdapter by inject()
+    private lateinit var adapter: CheckListAdapter
     private val viewModel: CheckListViewModel by inject()
+    private lateinit var mInterstitialAd: InterstitialAd
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,8 +59,10 @@ class CheckListFragment : Fragment() {
 
         setupDialogView()
         setupFab()
+        setupAdapter()
         setupRecyclerView()
         loadData()
+        setupAds()
     }
 
     private fun loadData() {
@@ -64,6 +72,13 @@ class CheckListFragment : Fragment() {
                 setupListVisibility(it)
             }
         )
+    }
+
+    private fun setupAdapter() {
+        adapter = CheckListAdapter { checklist ->
+            viewModel.delete(checklist)
+            requireActivity().showMessage(recycler_view_check_list, R.string.message_delete_item)
+        }
     }
 
     private fun setupRecyclerView() {
@@ -77,6 +92,7 @@ class CheckListFragment : Fragment() {
     private fun setupFab() {
         fab.setOnClickListener {
             dialog.show()
+            showAd()
         }
     }
 
@@ -104,7 +120,36 @@ class CheckListFragment : Fragment() {
     private fun saveCheckList(name: String) {
         val checkList = CheckList(name = name)
         viewModel.insert(checkList)
-        requireActivity().showMessage(fab, R.string.message_check_list_added)
+        requireActivity().showMessage(recycler_view_check_list, R.string.message_check_list_added)
+    }
+
+    private fun setupAds() {
+        MobileAds.initialize(requireContext())
+        val adRequest = AdRequest.Builder().build()
+        adView.loadAd(adRequest)
+
+        mInterstitialAd = InterstitialAd(requireContext())
+        mInterstitialAd.adUnitId = "ca-app-pub-9764822217711668/1831195491"
+        loadAds()
+        mInterstitialAd.adListener = object : AdListener() {
+
+            override fun onAdClosed(){
+                Log.d("Ads", "loaded new ads")
+                loadAds()
+            }
+        }
+    }
+
+    private fun loadAds() {
+        mInterstitialAd.loadAd(AdRequest.Builder().build())
+    }
+
+    private fun showAd() {
+        if (mInterstitialAd.isLoaded) {
+            mInterstitialAd.show()
+        } else {
+            Log.d("Ads", "The interstitial wasn't loaded yet.")
+        }
     }
 
 }

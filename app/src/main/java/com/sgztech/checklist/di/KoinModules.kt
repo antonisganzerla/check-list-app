@@ -1,7 +1,5 @@
 package com.sgztech.checklist.di
 
-import com.sgztech.checklist.adapter.CheckItemAdapter
-import com.sgztech.checklist.adapter.CheckListAdapter
 import com.sgztech.checklist.database.AppDatabase
 import com.sgztech.checklist.repository.CheckItemRepository
 import com.sgztech.checklist.repository.CheckListRepository
@@ -24,8 +22,6 @@ val repositoryModule = module {
 }
 
 val uiModule = module {
-    factory { CheckListAdapter(get()) }
-    factory { CheckItemAdapter(get()) }
     viewModel { CheckListViewModel(get()) }
     viewModel { CheckItemViewModel(get()) }
 }

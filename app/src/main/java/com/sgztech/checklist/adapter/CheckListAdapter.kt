@@ -7,14 +7,12 @@ import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import com.sgztech.checklist.R
 import com.sgztech.checklist.model.CheckList
-import com.sgztech.checklist.repository.CheckListRepository
 import com.sgztech.checklist.util.AlertDialogUtil
-import com.sgztech.checklist.util.SnackBarUtil
 import com.sgztech.checklist.view.CheckItemActivity
 import kotlinx.android.synthetic.main.check_list_card_view.view.*
 
 class CheckListAdapter (
-    private val repository: CheckListRepository
+    private val deleteCallback : (checklist: CheckList) -> Unit
 ) : RecyclerView.Adapter<CheckListAdapter.CheckListViewHolder>() {
 
     private var list: List<CheckList> = ArrayList()
@@ -57,9 +55,8 @@ class CheckListAdapter (
                 itemView.context,
                 R.string.dialog_message_delete_check_list
             ) {
-                repository.delete(checkList)
+                deleteCallback(checkList)
                 notifyItemRemoved(position)
-                SnackBarUtil.show(itemView, R.string.message_delete_item)
             }
         }
     }

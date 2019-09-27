@@ -3,6 +3,7 @@
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
+             android:background="@color/colorBackground"
              tools:context=".view.CheckListFragment">
 
     <androidx.recyclerview.widget.RecyclerView
@@ -11,6 +12,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="visible"
+            android:layout_marginBottom="60dp"
             tools:listitem="@layout/check_list_card_view"/>
 
     <LinearLayout
@@ -36,6 +38,17 @@
                 android:src="@drawable/ic_notebook_multiple_grey600_48dp"
                 />
     </LinearLayout>
+
+    <com.google.android.gms.ads.AdView
+            xmlns:ads="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/adView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            ads:adSize="BANNER"
+            android:layout_gravity="bottom|center"
+            ads:adUnitId="ca-app-pub-9764822217711668/8649747102">
+    </com.google.android.gms.ads.AdView>
+
 
     <include layout="@layout/fab"/>
 

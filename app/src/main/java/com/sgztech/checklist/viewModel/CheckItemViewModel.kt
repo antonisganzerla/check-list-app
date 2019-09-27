@@ -11,11 +11,15 @@ class CheckItemViewModel(private val repository: CheckItemRepository) : ViewMode
         repository.insert(checkItem)
     }
 
+    fun update(checkItem: CheckItem) {
+        repository.update(checkItem)
+    }
+
     fun delete(checkItem: CheckItem) {
         repository.delete(checkItem)
     }
 
     fun getAllCheckItens(idCheckList: Long): LiveData<List<CheckItem>> {
-        return repository.getAllCheckLists(idCheckList)
+        return repository.getAllCheckItens(idCheckList)
     }
 }
