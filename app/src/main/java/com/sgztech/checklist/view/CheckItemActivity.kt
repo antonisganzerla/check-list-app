@@ -3,20 +3,19 @@ package com.sgztech.checklist.view
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.MobileAds
 import com.sgztech.checklist.R
 import com.sgztech.checklist.adapter.CheckItemAdapter
 import com.sgztech.checklist.extension.gone
 import com.sgztech.checklist.extension.showMessage
 import com.sgztech.checklist.extension.visible
 import com.sgztech.checklist.model.CheckItem
+import com.sgztech.checklist.util.AdsUtil.init
+import com.sgztech.checklist.util.AdsUtil.setupBannerAd
 import com.sgztech.checklist.util.AlertDialogUtil
 import com.sgztech.checklist.util.CheckNameUtil.isValid
 import com.sgztech.checklist.viewModel.CheckItemViewModel
@@ -106,12 +105,6 @@ class CheckItemActivity : AppCompatActivity() {
         viewModel.getAllCheckItens(idCheckList).observe(
             this,
             Observer {
-                it.forEach {checkItem ->
-                    Log.w(
-                        "DEBUG",
-                        "LISTANDO: id: ${checkItem.id} , name: ${checkItem.name}, done: ${checkItem.isDone} , idcl: ${checkItem.idCheckList}"
-                    )
-                }
                 adapter.setCheckItens(it)
                 setupListVisibility(it)
             }
@@ -144,16 +137,15 @@ class CheckItemActivity : AppCompatActivity() {
     }
 
     private fun setupAds() {
-        MobileAds.initialize(applicationContext)
-        val adRequest = AdRequest.Builder().build()
-        adView.loadAd(adRequest)
+        init(applicationContext)
+        setupBannerAd(adView)
     }
 
-    override fun onDestroy() {
+    override fun onStop() {
         adapter.getCheckItens().forEach {
             viewModel.update(it)
         }
-        super.onDestroy()
+        super.onStop()
     }
 
     companion object {

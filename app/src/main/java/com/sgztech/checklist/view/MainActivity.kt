@@ -1,6 +1,9 @@
 package com.sgztech.checklist.view
 
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.os.PersistableBundle
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -12,6 +15,7 @@ import com.sgztech.checklist.R
 import com.sgztech.checklist.extension.openActivity
 import com.sgztech.checklist.util.AlertDialogUtil
 import com.sgztech.checklist.util.GoogleSignInUtil.signOut
+import com.sgztech.checklist.util.SnackBarUtil.show
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.nav_header.view.*
@@ -62,10 +66,16 @@ class MainActivity : AppCompatActivity() {
                     openCheckListFragment()
                 }
                 R.id.nav_item_tools -> {
-                    displayView(1, getString(R.string.title_preferences_fragment))
+                    displayView(POSITION_PREFERENCES_FRAGMENT, getString(R.string.title_preferences_fragment))
                 }
                 R.id.nav_item_logout -> {
                     showDialogLogout()
+                }
+                R.id.nav_item_rate -> {
+                    rateApp()
+                }
+                R.id.nav_item_share -> {
+                    shareApp()
                 }
                 R.id.nav_item_about -> {
                     AlertDialogUtil.showSimpleDialog(
@@ -105,14 +115,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun openCheckListFragment() {
-        displayView(INIT_POSITION_FRAGMENT, getString(R.string.title_check_list_fragment))
+        displayView(POSITION_CHECK_LISTS_FRAGMENT, getString(R.string.title_check_list_fragment))
     }
 
     private fun displayView(position: Int, title: String) {
         if (position != fragmentPosition) {
             val fragment = when (position) {
-                0 -> CheckListFragment()
-                1 -> PreferencesFragment()
+                POSITION_CHECK_LISTS_FRAGMENT -> CheckListFragment()
+                POSITION_PREFERENCES_FRAGMENT -> PreferencesFragment()
                 else -> {
                     CheckListFragment()
                 }
@@ -124,8 +134,30 @@ class MainActivity : AppCompatActivity() {
         toolbar.title = title
     }
 
+    private fun rateApp() {
+        val uri = Uri.parse(getString(R.string.app_store_url))
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+        try {
+            startActivity(intent)
+        } catch (exception: ActivityNotFoundException) {
+            show(toolbar, R.string.msg_store_app_not_found)
+        }
+    }
+
+    private fun shareApp() {
+        val intent = Intent(Intent.ACTION_SEND)
+        val msg = getString(R.string.app_store_details).plus(getString(R.string.app_store_url))
+        intent.putExtra(Intent.EXTRA_TEXT, msg)
+        intent.type = "text/plain"
+
+        if (intent.resolveActivity(packageManager) != null) {
+            startActivity(intent)
+        }
+    }
+
     companion object {
-        const val INIT_POSITION_FRAGMENT = 0
+        const val POSITION_CHECK_LISTS_FRAGMENT = 0
+        const val POSITION_PREFERENCES_FRAGMENT = 1
         const val CURRENT_FRAGMENT_KEY = "CURRENT_FRAGMENT_KEY"
     }
 }

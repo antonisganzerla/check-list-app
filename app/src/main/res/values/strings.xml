@@ -4,18 +4,25 @@
     <!-- Menu item drawer -->
     <string name="menu_item_check_list">Check list</string>
     <string name="menu_item_title">Ajuda</string>
+    <string name="menu_title_mainly">Menu</string>
     <string name="menu_item_tools">Configurações</string>
     <string name="menu_item_about">Sobre o app</string>
+    <string name="menu_item_rate">Avaliar</string>
+    <string name="menu_item_share">Compartilhar</string>
     <string name="menu_item_logout">Sair</string>
 
     <!-- LoginActivity -->
     <string name="msg_signin_success">signInResult:success -> %1$s.</string>
     <string name="msg_signin_fail">signInResult:failed code= %1$s.</string>
+    <string name="msg_signin_fail_snack_bar">Não foi possível efetuar login.</string>
 
     <!-- MainActivity -->
     <string name="open_drawer">Abrir</string>
     <string name="close_drawer">Fechar</string>
     <string name="msg_logout_success">Logout with success</string>
+    <string name="app_store_details">Confira o aplicativo Check List App \n </string>
+    <string name="app_store_url">https://play.google.com/store/apps/details?id=com.sgztech.checklist</string>
+    <string name="msg_store_app_not_found">Não foi possível abrir a loja de aplicativos.</string>
 
     <!-- AlertDialogUtil -->
     <string name="dialog_title">Atenção</string>

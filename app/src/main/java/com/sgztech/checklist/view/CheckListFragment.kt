@@ -2,7 +2,6 @@ package com.sgztech.checklist.view
 
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,16 +9,18 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.gms.ads.AdListener
-import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.InterstitialAd
-import com.google.android.gms.ads.MobileAds
 import com.sgztech.checklist.R
 import com.sgztech.checklist.adapter.CheckListAdapter
 import com.sgztech.checklist.extension.gone
 import com.sgztech.checklist.extension.showMessage
 import com.sgztech.checklist.extension.visible
 import com.sgztech.checklist.model.CheckList
+import com.sgztech.checklist.util.AdsUtil.ID_INTERSTICIAL_AD
+import com.sgztech.checklist.util.AdsUtil.buildIntersticialAd
+import com.sgztech.checklist.util.AdsUtil.init
+import com.sgztech.checklist.util.AdsUtil.setupBannerAd
+import com.sgztech.checklist.util.AdsUtil.showIntersticialAd
 import com.sgztech.checklist.util.AlertDialogUtil
 import com.sgztech.checklist.util.CheckNameUtil
 import com.sgztech.checklist.viewModel.CheckListViewModel
@@ -92,7 +93,7 @@ class CheckListFragment : Fragment() {
     private fun setupFab() {
         fab.setOnClickListener {
             dialog.show()
-            showAd()
+            showIntersticialAd(mInterstitialAd)
         }
     }
 
@@ -124,32 +125,8 @@ class CheckListFragment : Fragment() {
     }
 
     private fun setupAds() {
-        MobileAds.initialize(requireContext())
-        val adRequest = AdRequest.Builder().build()
-        adView.loadAd(adRequest)
-
-        mInterstitialAd = InterstitialAd(requireContext())
-        mInterstitialAd.adUnitId = "ca-app-pub-9764822217711668/1831195491"
-        loadAds()
-        mInterstitialAd.adListener = object : AdListener() {
-
-            override fun onAdClosed(){
-                Log.d("Ads", "loaded new ads")
-                loadAds()
-            }
-        }
+        init(requireContext())
+        setupBannerAd(adView)
+        mInterstitialAd = buildIntersticialAd(requireContext(), ID_INTERSTICIAL_AD)
     }
-
-    private fun loadAds() {
-        mInterstitialAd.loadAd(AdRequest.Builder().build())
-    }
-
-    private fun showAd() {
-        if (mInterstitialAd.isLoaded) {
-            mInterstitialAd.show()
-        } else {
-            Log.d("Ads", "The interstitial wasn't loaded yet.")
-        }
-    }
-
 }

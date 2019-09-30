@@ -11,6 +11,8 @@ import com.sgztech.checklist.R
 import com.sgztech.checklist.extension.openActivity
 import com.sgztech.checklist.extension.showLog
 import com.sgztech.checklist.util.GoogleSignInUtil.googleSignInClient
+import com.sgztech.checklist.util.PreferenceUtil.setUserId
+import com.sgztech.checklist.util.SnackBarUtil.show
 import kotlinx.android.synthetic.main.activity_login.*
 
 
@@ -49,11 +51,14 @@ class LoginActivity : AppCompatActivity() {
     private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
         try {
             val account = completedTask.getResult(ApiException::class.java)
-            showLog(getString(R.string.msg_signin_success, account?.displayName))
+            account?.let {
+                showLog(getString(R.string.msg_signin_success, account.displayName))
+                setUserId(applicationContext, account.id!!)
+            }
             openMainActivity()
         } catch (e: ApiException) {
             showLog(getString(R.string.msg_signin_fail, e.statusCode.toString()))
-            showLog(getString(R.string.msg_signin_fail, e))
+            show(sign_in_button, R.string.msg_signin_fail_snack_bar)
             // verificar coenxão com a internet;
         }
 
