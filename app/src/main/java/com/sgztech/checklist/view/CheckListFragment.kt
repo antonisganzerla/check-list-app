@@ -9,18 +9,12 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.gms.ads.InterstitialAd
 import com.sgztech.checklist.R
 import com.sgztech.checklist.adapter.CheckListAdapter
 import com.sgztech.checklist.extension.gone
 import com.sgztech.checklist.extension.showMessage
 import com.sgztech.checklist.extension.visible
 import com.sgztech.checklist.model.CheckList
-import com.sgztech.checklist.util.AdsUtil.ID_INTERSTICIAL_AD
-import com.sgztech.checklist.util.AdsUtil.buildIntersticialAd
-import com.sgztech.checklist.util.AdsUtil.init
-import com.sgztech.checklist.util.AdsUtil.setupBannerAd
-import com.sgztech.checklist.util.AdsUtil.showIntersticialAd
 import com.sgztech.checklist.util.AlertDialogUtil
 import com.sgztech.checklist.util.CheckNameUtil
 import com.sgztech.checklist.viewModel.CheckListViewModel
@@ -46,7 +40,6 @@ class CheckListFragment : Fragment() {
 
     private lateinit var adapter: CheckListAdapter
     private val viewModel: CheckListViewModel by inject()
-    private lateinit var mInterstitialAd: InterstitialAd
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -63,7 +56,6 @@ class CheckListFragment : Fragment() {
         setupAdapter()
         setupRecyclerView()
         loadData()
-        setupAds()
     }
 
     private fun loadData() {
@@ -93,7 +85,6 @@ class CheckListFragment : Fragment() {
     private fun setupFab() {
         fab.setOnClickListener {
             dialog.show()
-            showIntersticialAd(mInterstitialAd)
         }
     }
 
@@ -122,11 +113,5 @@ class CheckListFragment : Fragment() {
         val checkList = CheckList(name = name)
         viewModel.insert(checkList)
         requireActivity().showMessage(recycler_view_check_list, R.string.message_check_list_added)
-    }
-
-    private fun setupAds() {
-        init(requireContext())
-        setupBannerAd(adView)
-        mInterstitialAd = buildIntersticialAd(requireContext(), ID_INTERSTICIAL_AD)
     }
 }

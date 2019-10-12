@@ -14,8 +14,6 @@ import com.sgztech.checklist.extension.gone
 import com.sgztech.checklist.extension.showMessage
 import com.sgztech.checklist.extension.visible
 import com.sgztech.checklist.model.CheckItem
-import com.sgztech.checklist.util.AdsUtil.init
-import com.sgztech.checklist.util.AdsUtil.setupBannerAd
 import com.sgztech.checklist.util.AlertDialogUtil
 import com.sgztech.checklist.util.CheckNameUtil.isValid
 import com.sgztech.checklist.viewModel.CheckItemViewModel
@@ -55,7 +53,6 @@ class CheckItemActivity : AppCompatActivity() {
         setupAdapter()
         setupRecyclerView()
         loadData()
-        setupAds()
     }
 
     private fun setupIdCheckList() {
@@ -134,11 +131,6 @@ class CheckItemActivity : AppCompatActivity() {
             recycler_view_check_item.visible()
             panel_empty_list.gone()
         }
-    }
-
-    private fun setupAds() {
-        init(applicationContext)
-        setupBannerAd(adView)
     }
 
     override fun onStop() {
