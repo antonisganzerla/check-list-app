@@ -27,7 +27,7 @@ class CheckListAdapter (
     }
 
     override fun onBindViewHolder(holder: CheckListViewHolder, position: Int) {
-        holder.bind(list[position], position)
+        holder.bind(list[position])
     }
 
     fun setCheckLists(checkLists: List<CheckList>) {
@@ -37,26 +37,26 @@ class CheckListAdapter (
 
 
     inner class CheckListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        fun bind(checkList: CheckList, position: Int){
+        fun bind(checkList: CheckList){
             val name = checkList.name
             val id = checkList.id
             itemView.tvCheckListName.text = name
             itemView.tvDate.text = checkList.createDate
             itemView.btnDeleteCheckList.setOnClickListener {
-                createAlertDialog(checkList, position).show()
+                createAlertDialog(checkList).show()
             }
             itemView.setOnClickListener {
                 CheckItemActivity.open(itemView.context, name, id)
             }
         }
 
-        private fun createAlertDialog(checkList: CheckList, position: Int): AlertDialog {
+        private fun createAlertDialog(checkList: CheckList): AlertDialog {
             return AlertDialogUtil.create(
                 itemView.context,
                 R.string.dialog_message_delete_check_list
             ) {
                 deleteCallback(checkList)
-                notifyItemRemoved(position)
+                notifyItemRemoved(adapterPosition)
             }
         }
     }

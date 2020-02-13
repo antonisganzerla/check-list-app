@@ -30,7 +30,7 @@ class CheckItemAdapter(
     }
 
     override fun onBindViewHolder(holder: CheckItemViewHolder, position: Int) {
-        holder.bind(list[position], position)
+        holder.bind(list[position])
     }
 
     fun setCheckItens(checkItens: List<CheckItem>) {
@@ -43,7 +43,7 @@ class CheckItemAdapter(
     }
 
     inner class CheckItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        fun bind(checkItem: CheckItem, position: Int) {
+        fun bind(checkItem: CheckItem) {
             Log.w("DEBUG", "bind no adaptger")
             with(itemView.cbCheckItem) {
                 this.text = checkItem.name
@@ -63,17 +63,17 @@ class CheckItemAdapter(
             }
             itemView.tvId.text = checkItem.id.toString()
             itemView.btnDeleteCheckItem.setOnClickListener {
-                createAlertDialog(checkItem, position).show()
+                createAlertDialog(checkItem).show()
             }
         }
 
-        private fun createAlertDialog(checkItem: CheckItem, position: Int): AlertDialog {
+        private fun createAlertDialog(checkItem: CheckItem): AlertDialog {
             return AlertDialogUtil.create(
                 itemView.context,
                 R.string.dialog_message_delete_check_item
             ) {
                 deleteCallback(checkItem)
-                notifyItemRemoved(position)
+                notifyItemRemoved(adapterPosition)
             }
         }
     }
