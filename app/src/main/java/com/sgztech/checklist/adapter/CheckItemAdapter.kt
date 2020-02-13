@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
+import android.widget.Filter
+import android.widget.Filterable
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import com.sgztech.checklist.R
@@ -14,10 +16,11 @@ import com.sgztech.checklist.util.AlertDialogUtil
 import kotlinx.android.synthetic.main.check_item_card_view.view.*
 
 class CheckItemAdapter(
-    private val deleteCallback : (checkItem: CheckItem) -> Unit
-) : RecyclerView.Adapter<CheckItemAdapter.CheckItemViewHolder>() {
+    private val deleteCallback: (checkItem: CheckItem) -> Unit
+) : RecyclerView.Adapter<CheckItemAdapter.CheckItemViewHolder>(), Filterable {
 
-    private var list: List<CheckItem> = ArrayList()
+    private var list: MutableList<CheckItem> = ArrayList()
+    private var fullList: MutableList<CheckItem> = ArrayList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CheckItemViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -33,12 +36,13 @@ class CheckItemAdapter(
         holder.bind(list[position])
     }
 
-    fun setCheckItens(checkItens: List<CheckItem>) {
+    fun setCheckItens(checkItens: MutableList<CheckItem>) {
         this.list = checkItens
+        this.fullList = ArrayList(checkItens)
         notifyDataSetChanged()
     }
 
-    fun getCheckItens(): List<CheckItem>{
+    fun getCheckItens(): List<CheckItem> {
         return list
     }
 
@@ -84,5 +88,33 @@ class CheckItemAdapter(
 
     private fun CheckBox.overideText() {
         this.paintFlags = this.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+    }
+
+    override fun getFilter(): Filter {
+        return object : Filter() {
+
+            override fun performFiltering(constraint: CharSequence?): FilterResults {
+                val filteredList: MutableList<CheckItem> = ArrayList()
+                if (constraint.isNullOrEmpty()) {
+                    filteredList.addAll(fullList)
+                } else {
+                    val filterPattern = constraint.toString().toLowerCase().trim()
+                    list.forEach {
+                        if (it.name.toLowerCase().contains(filterPattern)) {
+                            filteredList.add(it)
+                        }
+                    }
+                }
+                val filterResults = FilterResults()
+                filterResults.values = filteredList
+                return filterResults
+            }
+
+            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+                list.clear()
+                list.addAll(results?.values as MutableList<CheckItem>)
+                notifyDataSetChanged()
+            }
+        }
     }
 }

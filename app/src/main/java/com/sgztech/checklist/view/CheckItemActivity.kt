@@ -3,9 +3,12 @@ package com.sgztech.checklist.view
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.sgztech.checklist.R
@@ -102,7 +105,7 @@ class CheckItemActivity : AppCompatActivity() {
         viewModel.getAllCheckItens(idCheckList).observe(
             this,
             Observer {
-                adapter.setCheckItens(it)
+                adapter.setCheckItens(it.toMutableList())
                 setupListVisibility(it)
             }
         )
@@ -138,6 +141,28 @@ class CheckItemActivity : AppCompatActivity() {
             viewModel.update(it)
         }
         super.onStop()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+
+        menuInflater.inflate(R.menu.search_menu, menu)
+
+        val searchItem = menu?.findItem(R.id.action_search)
+        val searchView = searchItem?.actionView as SearchView
+        searchView.imeOptions = EditorInfo.IME_ACTION_DONE
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                adapter.filter.filter(newText)
+                return false
+            }
+        })
+
+        return super.onCreateOptionsMenu(menu)
     }
 
     companion object {
