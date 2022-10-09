@@ -35,7 +35,7 @@ object GoogleSignInUtil {
     @JvmStatic
     fun signOut(activity: AppCompatActivity) {
         googleSignLogout(activity) {
-            activity.showLog(activity.getString(R.string.msg_logout_success))
+            showLog(activity.getString(R.string.msg_logout_success))
         }
     }
 

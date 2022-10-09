@@ -6,11 +6,17 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.View
 import android.view.inputmethod.EditorInfo
+import android.widget.Button
+import android.widget.EditText
+import android.widget.LinearLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
-import androidx.lifecycle.Observer
+import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.textfield.TextInputLayout
 import com.sgztech.checklist.R
 import com.sgztech.checklist.adapter.CheckItemAdapter
 import com.sgztech.checklist.extension.gone
@@ -20,18 +26,21 @@ import com.sgztech.checklist.model.CheckItem
 import com.sgztech.checklist.util.AlertDialogUtil
 import com.sgztech.checklist.util.CheckNameUtil.isValid
 import com.sgztech.checklist.viewModel.CheckItemViewModel
-import kotlinx.android.synthetic.main.activity_check_item.*
-import kotlinx.android.synthetic.main.dialog_default_add.view.*
-import kotlinx.android.synthetic.main.fab.*
-import kotlinx.android.synthetic.main.toolbar.*
-import org.koin.android.ext.android.inject
-
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class CheckItemActivity : AppCompatActivity() {
 
     private val dialogView: View by lazy {
         layoutInflater.inflate(R.layout.dialog_default_add, null)
     }
+    private val btnSave: Button by lazy { dialogView.findViewById(R.id.btnSave) }
+    private val etName: EditText by lazy { dialogView.findViewById(R.id.etName) }
+    private val textInputLayoutName: TextInputLayout by lazy { dialogView.findViewById(R.id.textInputLayoutName) }
+
+    private val toolbar: Toolbar by lazy { findViewById(R.id.toolbar) }
+    private val fab: FloatingActionButton by lazy { findViewById(R.id.fab) }
+    private val recyclerViewCheckItem: RecyclerView by lazy { findViewById(R.id.recycler_view_check_item) }
+    private val panelEmptyList: LinearLayout by lazy { findViewById(R.id.panel_empty_list) }
 
     private val dialog: AlertDialog by lazy {
         AlertDialogUtil.buildCustomDialog(
@@ -42,8 +51,7 @@ class CheckItemActivity : AppCompatActivity() {
     }
 
     private var idCheckList: Long = 0
-    private lateinit var adapter: CheckItemAdapter
-    private val viewModel: CheckItemViewModel by inject()
+    private val viewModel: CheckItemViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,7 +62,6 @@ class CheckItemActivity : AppCompatActivity() {
         setupFab()
         setupIdCheckList()
         setupAdapter()
-        setupRecyclerView()
         loadData()
     }
 
@@ -79,9 +86,8 @@ class CheckItemActivity : AppCompatActivity() {
     }
 
     private fun setupDialogView() {
-        dialogView.btnSave.setOnClickListener {
-            val etName = dialogView.etName
-            if (isValid(etName, dialogView.textInputLayoutName)) {
+        btnSave.setOnClickListener {
+            if (isValid(etName, textInputLayoutName)) {
                 saveCheckItem(etName.text.toString(), idCheckList)
                 etName.text.clear()
                 dialog.dismiss()
@@ -92,7 +98,8 @@ class CheckItemActivity : AppCompatActivity() {
     private fun saveCheckItem(name: String, id: Long) {
         val checkItem = CheckItem(name = name, idCheckList = id)
         viewModel.insert(checkItem)
-        showMessage(recycler_view_check_item, R.string.message_check_item_added)
+        fab.showMessage(R.string.message_check_item_added)
+        loadData()
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -102,45 +109,40 @@ class CheckItemActivity : AppCompatActivity() {
     }
 
     private fun loadData() {
-        viewModel.getAllCheckItens(idCheckList).observe(
-            this,
-            Observer {
-                adapter.setCheckItens(it.toMutableList())
-                setupListVisibility(it)
-            }
-        )
+        viewModel.getAllCheckItems(idCheckList)
     }
 
     private fun setupAdapter() {
-        adapter = CheckItemAdapter { checkItem ->
-            viewModel.delete(checkItem)
-            showMessage(recycler_view_check_item, R.string.message_delete_item)
+        viewModel.checkItems.observe(this) { items ->
+            val adapter = CheckItemAdapter(
+                items = items,
+                updateCallback = { item ->
+                    viewModel.update(item)
+                    loadData()
+                }
+            ) { checkItem ->
+                viewModel.delete(checkItem)
+                fab.showMessage(R.string.message_delete_item)
+                loadData()
+            }
+
+            recyclerViewCheckItem.apply {
+                this.adapter = adapter
+                layoutManager = LinearLayoutManager(this@CheckItemActivity)
+                setHasFixedSize(true)
+            }
+            setupListVisibility(items)
         }
     }
 
-    private fun setupRecyclerView() {
-        recycler_view_check_item.let {
-            it.adapter = adapter
-            it.layoutManager = LinearLayoutManager(this)
-            it.setHasFixedSize(true)
-        }
-    }
-
-    private fun setupListVisibility(list: List<CheckItem>) {
-        if (list.isEmpty()) {
-            recycler_view_check_item.gone()
-            panel_empty_list.visible()
+    private fun setupListVisibility(items: List<CheckItem>) {
+        if (items.isEmpty()) {
+            recyclerViewCheckItem.gone()
+            panelEmptyList.visible()
         } else {
-            recycler_view_check_item.visible()
-            panel_empty_list.gone()
+            recyclerViewCheckItem.visible()
+            panelEmptyList.gone()
         }
-    }
-
-    override fun onStop() {
-        adapter.getCheckItens().forEach {
-            viewModel.update(it)
-        }
-        super.onStop()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -157,7 +159,7 @@ class CheckItemActivity : AppCompatActivity() {
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                adapter.filter.filter(newText)
+                viewModel.filter(newText, idCheckList)
                 return false
             }
         })

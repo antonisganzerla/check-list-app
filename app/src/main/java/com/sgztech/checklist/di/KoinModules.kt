@@ -5,7 +5,7 @@ import com.sgztech.checklist.repository.CheckItemRepository
 import com.sgztech.checklist.repository.CheckListRepository
 import com.sgztech.checklist.viewModel.CheckItemViewModel
 import com.sgztech.checklist.viewModel.CheckListViewModel
-import org.koin.android.viewmodel.dsl.viewModel
+import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val dbModule = module {

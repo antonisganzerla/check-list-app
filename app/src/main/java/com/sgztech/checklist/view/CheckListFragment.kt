@@ -5,10 +5,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
+import android.widget.LinearLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.textfield.TextInputLayout
 import com.sgztech.checklist.R
 import com.sgztech.checklist.adapter.CheckListAdapter
 import com.sgztech.checklist.extension.gone
@@ -18,11 +23,7 @@ import com.sgztech.checklist.model.CheckList
 import com.sgztech.checklist.util.AlertDialogUtil
 import com.sgztech.checklist.util.CheckNameUtil
 import com.sgztech.checklist.viewModel.CheckListViewModel
-import kotlinx.android.synthetic.main.dialog_default_add.view.*
-import kotlinx.android.synthetic.main.fab.*
-import kotlinx.android.synthetic.main.fragment_check_list.*
-import org.koin.android.ext.android.inject
-
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class CheckListFragment : Fragment() {
 
@@ -38,8 +39,15 @@ class CheckListFragment : Fragment() {
         layoutInflater.inflate(R.layout.dialog_default_add, null)
     }
 
-    private lateinit var adapter: CheckListAdapter
-    private val viewModel: CheckListViewModel by inject()
+    private val btnSave: Button by lazy { dialogView.findViewById(R.id.btnSave) }
+    private val etName: EditText by lazy { dialogView.findViewById(R.id.etName) }
+    private val textInputLayoutName: TextInputLayout by lazy { dialogView.findViewById(R.id.textInputLayoutName) }
+
+    private val fab: FloatingActionButton by lazy { requireView().findViewById(R.id.fab) }
+    private val recyclerViewCheckList: RecyclerView by lazy { requireView().findViewById(R.id.recycler_view_check_list) }
+    private val panelEmptyList: LinearLayout by lazy { requireView().findViewById(R.id.panel_empty_list) }
+
+    private val viewModel: CheckListViewModel by viewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,31 +62,30 @@ class CheckListFragment : Fragment() {
         setupDialogView()
         setupFab()
         setupAdapter()
-        setupRecyclerView()
         loadData()
     }
 
     private fun loadData() {
-        viewModel.getAllCheckLists().observe(
-            this, Observer {
-                adapter.setCheckLists(it)
-                setupListVisibility(it)
-            }
-        )
+        viewModel.loadCheckLists()
     }
 
     private fun setupAdapter() {
-        adapter = CheckListAdapter { checklist ->
-            viewModel.delete(checklist)
-            requireActivity().showMessage(recycler_view_check_list, R.string.message_delete_item)
-        }
-    }
+        viewModel.checkLists.observe(requireActivity()){ items ->
+            val adapter = CheckListAdapter(
+                items = items,
+            ) { checklist ->
+                viewModel.delete(checklist)
+                fab.showMessage( R.string.message_delete_item)
+                loadData()
+            }
 
-    private fun setupRecyclerView() {
-        recycler_view_check_list.let {
-            it.adapter = adapter
-            it.layoutManager = LinearLayoutManager(activity)
-            it.setHasFixedSize(true)
+            recyclerViewCheckList.let {
+                it.adapter = adapter
+                it.layoutManager = LinearLayoutManager(activity)
+                it.setHasFixedSize(true)
+            }
+
+            setupListVisibility(items)
         }
     }
 
@@ -89,9 +96,8 @@ class CheckListFragment : Fragment() {
     }
 
     private fun setupDialogView() {
-        dialogView.btnSave.setOnClickListener {
-            val etName = dialogView.etName
-            if (CheckNameUtil.isValid(etName, dialogView.textInputLayoutName)) {
+        btnSave.setOnClickListener {
+            if (CheckNameUtil.isValid(etName, textInputLayoutName)) {
                 saveCheckList(etName.text.toString())
                 etName.text.clear()
                 dialog.dismiss()
@@ -99,19 +105,20 @@ class CheckListFragment : Fragment() {
         }
     }
 
-    private fun setupListVisibility(list: List<CheckList>) {
-        if (list.isEmpty()) {
-            recycler_view_check_list.gone()
-            panel_empty_list.visible()
+    private fun setupListVisibility(items: List<CheckList>) {
+        if (items.isEmpty()) {
+            recyclerViewCheckList.gone()
+            panelEmptyList.visible()
         } else {
-            recycler_view_check_list.visible()
-            panel_empty_list.gone()
+            recyclerViewCheckList.visible()
+            panelEmptyList.gone()
         }
     }
 
     private fun saveCheckList(name: String) {
         val checkList = CheckList(name = name)
         viewModel.insert(checkList)
-        requireActivity().showMessage(recycler_view_check_list, R.string.message_check_list_added)
+        fab.showMessage(R.string.message_check_list_added)
+        loadData()
     }
 }

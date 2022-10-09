@@ -3,19 +3,19 @@ package com.sgztech.checklist.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import com.sgztech.checklist.R
 import com.sgztech.checklist.model.CheckList
 import com.sgztech.checklist.util.AlertDialogUtil
 import com.sgztech.checklist.view.CheckItemActivity
-import kotlinx.android.synthetic.main.check_list_card_view.view.*
 
 class CheckListAdapter (
+    private val items: List<CheckList>,
     private val deleteCallback : (checklist: CheckList) -> Unit
 ) : RecyclerView.Adapter<CheckListAdapter.CheckListViewHolder>() {
-
-    private var list: List<CheckList> = ArrayList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CheckListViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.check_list_card_view, parent, false)
@@ -23,26 +23,24 @@ class CheckListAdapter (
     }
 
     override fun getItemCount(): Int {
-        return list.size
+        return items.size
     }
 
     override fun onBindViewHolder(holder: CheckListViewHolder, position: Int) {
-        holder.bind(list[position])
+        holder.bind(items[position])
     }
-
-    fun setCheckLists(checkLists: List<CheckList>) {
-        this.list = checkLists
-        notifyDataSetChanged()
-    }
-
 
     inner class CheckListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val tvCheckListName: TextView by lazy { itemView.findViewById(R.id.tvCheckListName) }
+        private val tvDate: TextView by lazy { itemView.findViewById(R.id.tvDate) }
+        private val btnDeleteCheckList: ImageButton by lazy { itemView.findViewById(R.id.btnDeleteCheckList) }
+
         fun bind(checkList: CheckList){
             val name = checkList.name
             val id = checkList.id
-            itemView.tvCheckListName.text = name
-            itemView.tvDate.text = checkList.createDate
-            itemView.btnDeleteCheckList.setOnClickListener {
+            tvCheckListName.text = name
+            tvDate.text = checkList.createDate
+            btnDeleteCheckList.setOnClickListener {
                 createAlertDialog(checkList).show()
             }
             itemView.setOnClickListener {

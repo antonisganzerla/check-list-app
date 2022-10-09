@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.common.SignInButton
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import com.sgztech.checklist.R
@@ -13,8 +14,6 @@ import com.sgztech.checklist.extension.showLog
 import com.sgztech.checklist.util.GoogleSignInUtil.googleSignInClient
 import com.sgztech.checklist.util.PreferenceUtil.setUserId
 import com.sgztech.checklist.util.SnackBarUtil.show
-import kotlinx.android.synthetic.main.activity_login.*
-
 
 class LoginActivity : AppCompatActivity() {
 
@@ -22,11 +21,13 @@ class LoginActivity : AppCompatActivity() {
         GoogleSignIn.getLastSignedInAccount(this)
     }
 
+    private val signInButton: SignInButton by lazy { findViewById(R.id.sign_in_button) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        sign_in_button.setOnClickListener {
+        signInButton.setOnClickListener {
             signIn()
         }
 
@@ -58,8 +59,7 @@ class LoginActivity : AppCompatActivity() {
             openMainActivity()
         } catch (e: ApiException) {
             showLog(getString(R.string.msg_signin_fail, e.statusCode.toString()))
-            show(sign_in_button, R.string.msg_signin_fail_snack_bar)
-            // verificar coenxão com a internet;
+            show(signInButton, R.string.msg_signin_fail_snack_bar)
         }
 
     }

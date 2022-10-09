@@ -1,25 +1,52 @@
 package com.sgztech.checklist.viewModel
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.sgztech.checklist.model.CheckItem
 import com.sgztech.checklist.repository.CheckItemRepository
+import kotlinx.coroutines.launch
 
-class CheckItemViewModel(private val repository: CheckItemRepository) : ViewModel() {
+class CheckItemViewModel(
+    private val repository: CheckItemRepository,
+) : ViewModel() {
+
+    private val _checkItems: MutableLiveData<List<CheckItem>> = MutableLiveData()
+    val checkItems: LiveData<List<CheckItem>> = _checkItems
 
     fun insert(checkItem: CheckItem) {
-        repository.insert(checkItem)
+        viewModelScope.launch {
+            repository.insert(checkItem)
+        }
     }
 
     fun update(checkItem: CheckItem) {
-        repository.update(checkItem)
+        viewModelScope.launch {
+            repository.update(checkItem)
+        }
     }
 
     fun delete(checkItem: CheckItem) {
-        repository.delete(checkItem)
+        viewModelScope.launch {
+            repository.delete(checkItem)
+        }
     }
 
-    fun getAllCheckItens(idCheckList: Long): LiveData<List<CheckItem>> {
-        return repository.getAllCheckItens(idCheckList)
+    fun getAllCheckItems(idCheckList: Long) {
+        viewModelScope.launch {
+            _checkItems.postValue(repository.getAllCheckItems(idCheckList))
+        }
+    }
+
+    fun filter(newText: String?, idCheckList: Long) {
+        if (newText.isNullOrEmpty())
+            getAllCheckItems(idCheckList)
+        else
+            viewModelScope.launch {
+                _checkItems.postValue(
+                    repository.getAllCheckItems(idCheckList)
+                        .filter { it.name.startsWith(newText, ignoreCase = true) })
+            }
     }
 }

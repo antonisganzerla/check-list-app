@@ -7,7 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.annotation.StringRes
 import com.sgztech.checklist.util.SnackBarUtil
 
-fun ComponentActivity.showLog(message: String) {
+fun showLog(message: String) {
     Log.w("TAG_DEBUG", message)
 }
 
@@ -17,6 +17,6 @@ fun ComponentActivity.openActivity(cls: Class<*>) {
     finish()
 }
 
-fun ComponentActivity.showMessage(view: View, @StringRes resourceMessage: Int) {
-    SnackBarUtil.show(view, resourceMessage)
+fun View.showMessage(@StringRes resourceMessage: Int) {
+    SnackBarUtil.show(this, resourceMessage)
 }

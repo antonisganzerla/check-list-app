@@ -6,20 +6,22 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.PersistableBundle
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.material.navigation.NavigationView
 import com.sgztech.checklist.R
 import com.sgztech.checklist.extension.openActivity
 import com.sgztech.checklist.util.AlertDialogUtil
 import com.sgztech.checklist.util.GoogleSignInUtil.signOut
 import com.sgztech.checklist.util.SnackBarUtil.show
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.nav_header.view.*
-import kotlinx.android.synthetic.main.toolbar.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,6 +29,10 @@ class MainActivity : AppCompatActivity() {
         GoogleSignIn.getLastSignedInAccount(this)
     }
     private var fragmentPosition = -1
+
+    private val toolbar: Toolbar by lazy { findViewById(R.id.toolbar) }
+    private val drawerLayout: DrawerLayout by lazy { findViewById(R.id.drawerLayout) }
+    private val navView: NavigationView by lazy { findViewById(R.id.navView) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,8 +47,8 @@ class MainActivity : AppCompatActivity() {
         openCheckListFragment()
     }
 
-    override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?) {
-        outState?.putInt(CURRENT_FRAGMENT_KEY, fragmentPosition)
+    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
+        outState.putInt(CURRENT_FRAGMENT_KEY, fragmentPosition)
         super.onSaveInstanceState(outState, outPersistentState)
     }
 
@@ -108,9 +114,9 @@ class MainActivity : AppCompatActivity() {
     private fun setupHeaderDrawer() {
         val headerView = navView.getHeaderView(0)
         headerView?.let {
-            it.nav_header_name.text = account?.displayName
-            it.nav_header_email.text = account?.email
-            Picasso.get().load(account?.photoUrl).into(it.nav_header_imageView)
+            it.findViewById<TextView>(R.id.nav_header_name).text = account?.displayName
+            it.findViewById<TextView>(R.id.nav_header_email).text = account?.email
+            Picasso.get().load(account?.photoUrl).into(it.findViewById<ImageView>(R.id.nav_header_imageView))
         }
     }
 

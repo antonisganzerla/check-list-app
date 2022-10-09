@@ -1,26 +1,21 @@
 package com.sgztech.checklist.adapter
 
 import android.graphics.Paint
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckBox
-import android.widget.Filter
-import android.widget.Filterable
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import com.sgztech.checklist.R
 import com.sgztech.checklist.model.CheckItem
 import com.sgztech.checklist.util.AlertDialogUtil
-import kotlinx.android.synthetic.main.check_item_card_view.view.*
 
 class CheckItemAdapter(
-    private val deleteCallback: (checkItem: CheckItem) -> Unit
-) : RecyclerView.Adapter<CheckItemAdapter.CheckItemViewHolder>(), Filterable {
-
-    private var list: MutableList<CheckItem> = ArrayList()
-    private var fullList: MutableList<CheckItem> = ArrayList()
+    private val items: List<CheckItem>,
+    private val updateCallback: (checkItem: CheckItem) -> Unit,
+    private val deleteCallback: (checkItem: CheckItem) -> Unit,
+) : RecyclerView.Adapter<CheckItemAdapter.CheckItemViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CheckItemViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -29,44 +24,33 @@ class CheckItemAdapter(
     }
 
     override fun getItemCount(): Int {
-        return list.size
+        return items.size
     }
 
     override fun onBindViewHolder(holder: CheckItemViewHolder, position: Int) {
-        holder.bind(list[position])
-    }
-
-    fun setCheckItens(checkItens: MutableList<CheckItem>) {
-        this.list = checkItens
-        this.fullList = ArrayList(checkItens)
-        notifyDataSetChanged()
-    }
-
-    fun getCheckItens(): List<CheckItem> {
-        return list
+        holder.bind(items[position])
     }
 
     inner class CheckItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val cbCheckItem: CheckBox by lazy { itemView.findViewById(R.id.cbCheckItem) }
+        private val tvId: TextView by lazy { itemView.findViewById(R.id.tvId) }
+        private val btnDeleteCheckItem: ImageButton by lazy { itemView.findViewById(R.id.btnDeleteCheckItem) }
+
         fun bind(checkItem: CheckItem) {
-            Log.w("DEBUG", "bind no adaptger")
-            with(itemView.cbCheckItem) {
+            cbCheckItem.apply {
                 this.text = checkItem.name
                 this.isChecked = checkItem.isDone
-                if (isChecked) {
-                    overideText()
-                }
+                if (isChecked)
+                    overrideText()
+                else
+                    normalText()
+
                 this.setOnCheckedChangeListener { _, isChecked ->
-                    Log.w("DEBUG", "setOnCheckedChangeListener no adaptger")
-                    if (isChecked) {
-                        overideText()
-                    } else {
-                        normalText()
-                    }
-                    checkItem.isDone = isChecked
+                    updateCallback(checkItem.copy(isDone = isChecked))
                 }
             }
-            itemView.tvId.text = checkItem.id.toString()
-            itemView.btnDeleteCheckItem.setOnClickListener {
+            tvId.text = checkItem.id.toString()
+            btnDeleteCheckItem.setOnClickListener {
                 createAlertDialog(checkItem).show()
             }
         }
@@ -86,35 +70,7 @@ class CheckItemAdapter(
         this.paintFlags = this.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
     }
 
-    private fun CheckBox.overideText() {
+    private fun CheckBox.overrideText() {
         this.paintFlags = this.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
-    }
-
-    override fun getFilter(): Filter {
-        return object : Filter() {
-
-            override fun performFiltering(constraint: CharSequence?): FilterResults {
-                val filteredList: MutableList<CheckItem> = ArrayList()
-                if (constraint.isNullOrEmpty()) {
-                    filteredList.addAll(fullList)
-                } else {
-                    val filterPattern = constraint.toString().toLowerCase().trim()
-                    list.forEach {
-                        if (it.name.toLowerCase().contains(filterPattern)) {
-                            filteredList.add(it)
-                        }
-                    }
-                }
-                val filterResults = FilterResults()
-                filterResults.values = filteredList
-                return filterResults
-            }
-
-            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-                list.clear()
-                list.addAll(results?.values as MutableList<CheckItem>)
-                notifyDataSetChanged()
-            }
-        }
     }
 }

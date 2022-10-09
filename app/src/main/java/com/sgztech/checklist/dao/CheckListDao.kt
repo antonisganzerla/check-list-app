@@ -1,6 +1,5 @@
 package com.sgztech.checklist.dao
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.sgztech.checklist.model.CheckList
 
@@ -8,14 +7,14 @@ import com.sgztech.checklist.model.CheckList
 interface CheckListDao {
 
     @Query("SELECT * FROM CHECKLIST")
-    fun all(): LiveData<List<CheckList>>
+    suspend fun all(): List<CheckList>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun add(vararg checkList: CheckList)
+    suspend fun add(vararg checkList: CheckList)
 
     @Update
-    fun update(checkList: CheckList)
+    suspend fun update(checkList: CheckList)
 
     @Delete
-    fun delete(checkList: CheckList)
+    suspend fun delete(checkList: CheckList)
 }
